@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Captcha Verification</title>
+</head>
+<body style="text-align:center; font-family:sans-serif;">
+  <h2>Enter the CAPTCHA</h2>
+  <img src="/static/captcha_image.png" alt="CAPTCHA"><br><br>
+
+  <input type="text" id="captcha_input" placeholder="Enter CAPTCHA"><br><br>
+  <button onclick="validateCaptcha()">Submit</button>
+
+  <p id="result" style="font-weight:bold;"></p>
+
+  <script>
+    async function validateCaptcha() {
+      const userInput = document.getElementById("captcha_input").value;
+      const response = await fetch("/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ captcha_input: userInput })
+      });
+
+      const result = await response.json();
+      document.getElementById("result").innerText = result.success ? "✅ Correct CAPTCHA" : "❌ Incorrect CAPTCHA";
+    }
+  </script>
+</body>
+</html>
