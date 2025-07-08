@@ -30,17 +30,16 @@
         document.getElementById("result").innerText = result.success
           ? "✅ Correct CAPTCHA"
           : "❌ Incorrect CAPTCHA";
-        // Clear input and refresh CAPTCHA on validation
         document.getElementById("captcha_input").value = "";
-        refreshCaptcha();
+        refreshCaptcha(); // Refresh CAPTCHA after validation attempt
       }
 
       async function refreshCaptcha() {
         const imageElement = document.getElementById("captcha_image");
         // Appending a timestamp to the URL ensures the browser doesn't use a cached image
         imageElement.src = "/captcha_image?" + new Date().getTime();
-        // Also, regenerate the captcha on the server-side
-        await fetch("/", { method: "GET" }); // This will call the home route, regenerating the captcha
+        // Important: Also hit the home route to ensure a *new* captcha is generated on the server
+        await fetch("/", { method: "GET" });
       }
     </script>
   </body>
