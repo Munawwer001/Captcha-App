@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Captcha Verification</title>
+  </head>
+  <body style="text-align: center; font-family: sans-serif">
+    <h2>Enter the CAPTCHA</h2>
+    <img id="captcha_image" src="/captcha_image" alt="CAPTCHA" /><br /><br />
+
+    <input
+      type="text"
+      id="captcha_input"
+      placeholder="Enter CAPTCHA"
+    /><br /><br />
+    <button onclick="validateCaptcha()">Submit</button>
+    <button onclick="refreshCaptcha()">Refresh CAPTCHA</button>
+
+    <p id="result" style="font-weight: bold"></p>
+
+    <script>
+      async function validateCaptcha() {
+        const userInput = document.getElementById("captcha_input").value;
+        const response = await fetch("/validate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ captcha_input: userInput }),
+        });
+
+        const result = await response.json();
+        document.getElementById("result").innerText = result.success
+          ? "✅ Correct CAPTCHA"
+          : "❌ Incorrect CAPTCHA";
+        // Clear input and refresh CAPTCHA on validation
+        document.getElementById("captcha_input").value = "";
+        refreshCaptcha();
+      }
+
+      async function refreshCaptcha() {
+        const imageElement = document.getElementById("captcha_image");
+        // Appending a timestamp to the URL ensures the browser doesn't use a cached image
+        imageElement.src = "/captcha_image?" + new Date().getTime();
+        // Also, regenerate the captcha on the server-side
+        await fetch("/", { method: "GET" }); // This will call the home route, regenerating the captcha
+      }
+    </script>
+  </body>
+</html>
